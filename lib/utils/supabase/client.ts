@@ -12,6 +12,7 @@ export function createClient() {
         getUser: async () => ({ data: { user: null }, error: null }),
         getSession: async () => ({ data: { session: null }, error: null }),
         signInWithPassword: async () => ({ data: { user: null, session: null }, error: { message: 'Supabase not configured' } }),
+        signInWithOAuth: async () => ({ data: { url: null }, error: { message: 'Supabase not configured' } }),
         signOut: async () => ({ error: null }),
       },
       from: () => ({
