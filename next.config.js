@@ -11,10 +11,6 @@ const nextConfig = {
     ],
   },
   reactStrictMode: true,
-  // Allow all hosts for Replit proxy environment
-  experimental: {
-    allowedHosts: true,
-  },
   async rewrites() {
     return [
       {

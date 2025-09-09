@@ -4,9 +4,31 @@ import { cookies, type UnsafeUnwrappedCookies } from "next/headers";
 export async function createClient() {
   const cookieStore = (await cookies() as unknown as UnsafeUnwrappedCookies);
 
+  // Check if Supabase is properly configured
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('dummy') || supabaseAnonKey.includes('dummy') || !supabaseUrl.startsWith('http')) {
+    // Return a mock client that throws descriptive errors for auth operations
+    return {
+      auth: {
+        getUser: async () => ({ data: { user: null }, error: null }),
+        getSession: async () => ({ data: { session: null }, error: null }),
+        signInWithPassword: async () => ({ data: { user: null, session: null }, error: { message: 'Supabase not configured' } }),
+        signOut: async () => ({ error: null }),
+      },
+      from: () => ({
+        select: () => ({ data: [], error: null }),
+        insert: () => ({ data: null, error: { message: 'Supabase not configured' } }),
+        update: () => ({ data: null, error: { message: 'Supabase not configured' } }),
+        delete: () => ({ data: null, error: { message: 'Supabase not configured' } }),
+      }),
+    } as any;
+  }
+
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         get(name: string) {
