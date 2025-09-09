@@ -14,8 +14,8 @@ export async function createClient() {
       auth: {
         getUser: async () => ({ data: { user: null }, error: null }),
         getSession: async () => ({ data: { session: null }, error: null }),
-        signInWithPassword: async () => ({ data: { user: null, session: null }, error: { message: 'Supabase not configured' } }),
-        signInWithOAuth: async () => ({ data: { url: null }, error: { message: 'Supabase not configured' } }),
+        signInWithPassword: async () => ({ data: { user: null, session: null }, error: new Error('Supabase not configured') }),
+        signInWithOAuth: async () => ({ data: { url: null }, error: new Error('Supabase not configured - please add your Supabase credentials to enable authentication') }),
         signOut: async () => ({ error: null }),
       },
       from: () => ({
