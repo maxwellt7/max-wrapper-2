@@ -2,11 +2,18 @@
 
 import { useState, useEffect, useRef } from "react";
 import { MessageBubble } from "@/components/stacks/MessageBubble";
+import { QuestionInput } from "@/components/stacks/QuestionInput";
+import { ManifestoDisplay } from "@/components/stacks/ManifestoDisplay";
 
 interface Question {
   index: number;
   key: string;
   text: string;
+  type?: string;
+  options?: string[];
+  min?: number;
+  max?: number;
+  section?: string;
 }
 
 interface StackSession {
@@ -38,6 +45,8 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
   const [currentAnswer, setCurrentAnswer] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
+  const [manifestoData, setManifestoData] = useState<any>(null);
+  const [showManifesto, setShowManifesto] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -267,31 +276,16 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
       </div>
 
       {/* Input area */}
-      {session.status !== "completed" && (
+      {session.status !== "completed" && session.current_index < session.stack.questions.length && (
         <div className="border-t border-base-300 p-4 bg-base-100">
           <div className="max-w-4xl mx-auto">
-            <div className="flex gap-3">
-              <textarea
-                value={currentAnswer}
-                onChange={(e) => setCurrentAnswer(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Type your response here... (Press Enter to send, Shift+Enter for new line)"
-                className="flex-1 min-h-[100px] p-3 border border-base-300 rounded-lg bg-base-100 text-base-content focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-                disabled={isSubmitting || isGeneratingSummary}
-                maxLength={2000}
-              />
-              <button
-                onClick={submitAnswer}
-                disabled={!currentAnswer.trim() || isSubmitting || isGeneratingSummary}
-                className="px-8 py-3 bg-primary text-primary-content rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-              >
-                {isSubmitting ? "Sending..." : "Send"}
-              </button>
-            </div>
-            <div className="flex justify-between text-xs text-base-content/50 mt-2">
-              <span>Press Enter to send, Shift+Enter for new line</span>
-              <span>{currentAnswer.length}/2000</span>
-            </div>
+            <QuestionInput
+              question={session.stack.questions[session.current_index]}
+              currentAnswer={currentAnswer}
+              onAnswerChange={setCurrentAnswer}
+              onSubmit={submitAnswer}
+              isSubmitting={isSubmitting || isGeneratingSummary}
+            />
           </div>
         </div>
       )}
