@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { MessageBubble } from "@/components/stacks/MessageBubble";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 
 interface Question {
   index: number;
@@ -67,7 +65,7 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
         messageHistory.push({
           id: "welcome",
           role: "assistant",
-          content: `Welcome to your ${session.stack.title}! I'll be your facilitator today. Let's begin with your first question.`,
+          content: `Welcome to your ${session.stack.title}! I'm here to guide you through this structured reflection. Let's begin with your first question.`,
           timestamp: new Date().toISOString(),
         });
 
@@ -115,7 +113,7 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
             messageHistory.push({
               id: "summary",
               role: "assistant",
-              content: `Here's your complete ${session.stack.title} summary:\n\n${summary.summary_text}`,
+              content: `🎉 Congratulations! You've completed your ${session.stack.title}.\n\nHere's your personalized summary:\n\n${summary.summary_text}`,
               timestamp: summary.created_at,
             });
           }
@@ -186,7 +184,7 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
             const summaryMessage: Message = {
               id: "final-summary",
               role: "assistant",
-              content: `Congratulations! You've completed your ${session.stack.title}. Here's your structured summary:\n\n${summary.summary_text}`,
+              content: `🎉 Congratulations! You've completed your ${session.stack.title}.\n\nHere's your personalized summary:\n\n${summary.summary_text}`,
               timestamp: new Date().toISOString(),
             };
             
@@ -258,7 +256,7 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
           {isGeneratingSummary && (
             <MessageBubble
               role="assistant"
-              content="I'm generating your personalized summary... This may take a moment."
+              content="I'm generating your personalized summary... This may take a moment. ✨"
               timestamp={new Date().toISOString()}
               isLoading
             />
@@ -270,27 +268,29 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
 
       {/* Input area */}
       {session.status !== "completed" && (
-        <div className="border-t border-base-300 p-4">
+        <div className="border-t border-base-300 p-4 bg-base-100">
           <div className="max-w-4xl mx-auto">
             <div className="flex gap-3">
-              <Textarea
+              <textarea
                 value={currentAnswer}
                 onChange={(e) => setCurrentAnswer(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Type your response here..."
-                className="flex-1 min-h-[100px] resize-none"
+                placeholder="Type your response here... (Press Enter to send, Shift+Enter for new line)"
+                className="flex-1 min-h-[100px] p-3 border border-base-300 rounded-lg bg-base-100 text-base-content focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                 disabled={isSubmitting || isGeneratingSummary}
+                maxLength={2000}
               />
-              <Button
+              <button
                 onClick={submitAnswer}
                 disabled={!currentAnswer.trim() || isSubmitting || isGeneratingSummary}
-                className="px-8"
+                className="px-8 py-3 bg-primary text-primary-content rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
                 {isSubmitting ? "Sending..." : "Send"}
-              </Button>
+              </button>
             </div>
-            <div className="text-xs text-base-content/50 mt-2">
-              Press Enter to send, Shift+Enter for new line
+            <div className="flex justify-between text-xs text-base-content/50 mt-2">
+              <span>Press Enter to send, Shift+Enter for new line</span>
+              <span>{currentAnswer.length}/2000</span>
             </div>
           </div>
         </div>

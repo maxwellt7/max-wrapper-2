@@ -42,6 +42,7 @@ export default function StackSessionPage() {
 
       const sessionData = await response.json();
       setSession(sessionData);
+      setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -52,7 +53,10 @@ export default function StackSessionPage() {
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="loading loading-spinner loading-lg"></div>
+        <div className="text-center">
+          <div className="loading loading-spinner loading-lg mb-4"></div>
+          <p>Loading your session...</p>
+        </div>
       </div>
     );
   }
@@ -61,12 +65,19 @@ export default function StackSessionPage() {
     return (
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center">
+          <div className="text-6xl mb-4">⚠️</div>
           <h2 className="text-xl font-semibold text-error mb-2">
             {error || "Session not found"}
           </h2>
-          <p className="text-base-content/70">
+          <p className="text-base-content/70 mb-4">
             Please try again or start a new session.
           </p>
+          <button 
+            onClick={() => window.history.back()}
+            className="px-4 py-2 bg-primary text-primary-content rounded-lg"
+          >
+            Go Back
+          </button>
         </div>
       </div>
     );
