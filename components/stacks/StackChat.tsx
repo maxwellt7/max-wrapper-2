@@ -70,13 +70,53 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
         
         const messageHistory: Message[] = [];
         
-        // Add welcome message
-        messageHistory.push({
-          id: "welcome",
-          role: "assistant",
-          content: `Welcome to your ${session.stack.title}! I'm here to guide you through this structured reflection. Let's begin with your first question.`,
-          timestamp: new Date().toISOString(),
-        });
+        // Special handling for Morning Stack
+        if (session.stack.slug === 'morning') {
+          // Check if user has manifesto data
+          const manifestoResponse = await fetch('/stacks/api/manifesto', {
+            headers: { 'session-id': session.id }
+          });
+          
+          if (manifestoResponse.ok) {
+            const manifestoResult = await manifestoResponse.json();
+            setManifestoData(manifestoResult.manifesto);
+            
+            if (manifestoResult.manifesto) {
+              // User has manifesto - show it and jump to daily questions
+              messageHistory.push({
+                id: "welcome",
+                role: "assistant",
+                content: `Good morning! Welcome to your Morning Stack. Let me start by showing you your Morning Manifesto - your foundational beliefs and identity.`,
+                timestamp: new Date().toISOString(),
+              });
+              
+              setShowManifesto(true);
+              
+              // Skip manifesto questions if already completed
+              const dailyQuestionIndex = session.stack.questions.findIndex(q => q.section === 'daily');
+              if (dailyQuestionIndex > session.current_index) {
+                // Update session to start at daily questions
+                onSessionUpdate({ ...session, current_index: dailyQuestionIndex });
+              }
+            } else {
+              // First time - start with manifesto setup
+              messageHistory.push({
+                id: "welcome",
+                role: "assistant",
+                content: `Welcome to your Morning Stack! This is your first time, so let's begin by creating your Morning Manifesto - your foundational WHY, identity, and beliefs that will anchor every morning reflection.`,
+                timestamp: new Date().toISOString(),
+              });
+            }
+          }
+        } else {
+          // Standard welcome for other stacks
+          messageHistory.push({
+            id: "welcome",
+            role: "assistant",
+            content: `Welcome to your ${session.stack.title}! I'm here to guide you through this structured reflection. Let's begin with your first question.`,
+            timestamp: new Date().toISOString(),
+          });
+        }
 
         // Add previous Q&A pairs
         answers.forEach((answer: any) => {
@@ -141,6 +181,9 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
     setIsSubmitting(true);
     
     try {
+      const currentQuestion = session.stack.questions[session.current_index];
+      
+      // Submit the answer
       const response = await fetch("/stacks/api/answer", {
         method: "POST",
         headers: {
@@ -158,6 +201,43 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
       }
 
       const result = await response.json();
+      
+      // Handle manifesto completion for Morning Stack
+      if (session.stack.slug === 'morning' && currentQuestion.section === 'manifesto') {
+        // Check if we've completed all manifesto questions
+        const manifestoQuestions = session.stack.questions.filter(q => q.section === 'manifesto');
+        const isLastManifestoQuestion = session.current_index === manifestoQuestions[manifestoQuestions.length - 1].index;
+        
+        if (isLastManifestoQuestion) {
+          // Gather all manifesto answers
+          const allAnswersResponse = await fetch(`/stacks/api/answers?sessionId=${session.id}`);
+          if (allAnswersResponse.ok) {
+            const answers = await allAnswersResponse.json();
+            const manifestoAnswers = answers.filter((a: any) => 
+              manifestoQuestions.some(q => q.key === a.question_key)
+            );
+            
+            // Build manifesto data object
+            const manifestoData: any = {};
+            manifestoAnswers.forEach((answer: any) => {
+              manifestoData[answer.question_key] = answer.answer_text;
+            });
+            
+            // Save manifesto data
+            await fetch('/stacks/api/manifesto', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'session-id': session.id
+              },
+              body: JSON.stringify({ manifestoData })
+            });
+            
+            setManifestoData(manifestoData);
+            setShowManifesto(true);
+          }
+        }
+      }
       
       // Add user's answer to messages
       const userMessage: Message = {
@@ -262,6 +342,13 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
             />
           ))}
           
+          {/* Show Manifesto for Morning Stack */}
+          {session.stack.slug === 'morning' && showManifesto && manifestoData && (
+            <div className="my-6">
+              <ManifestoDisplay data={manifestoData} />
+            </div>
+          )}
+
           {isGeneratingSummary && (
             <MessageBubble
               role="assistant"
