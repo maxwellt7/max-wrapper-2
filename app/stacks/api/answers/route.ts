@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/utils/supabase/server";
+import { sessions } from "@/lib/session-storage";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,24 +13,19 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const supabase = await createClient();
-
-    // Get answers for session from database
-    const { data: answers, error } = await supabase
-      .from('stack_answers')
-      .select('*')
-      .eq('session_id', sessionId)
-      .order('question_index', { ascending: true });
-
-    if (error) {
-      console.error("Error fetching answers:", error);
-      return NextResponse.json(
-        { error: "Failed to fetch answers" },
-        { status: 500 }
-      );
+    // Get session from memory storage
+    const session = sessions.get(sessionId);
+    
+    if (!session) {
+      console.error("Session not found:", sessionId);
+      // Return empty array for non-existent sessions to avoid errors
+      return NextResponse.json([]);
     }
 
-    return NextResponse.json(answers || []);
+    // Return answers from session, sorted by question index
+    const answers = (session.answers || []).sort((a: any, b: any) => a.question_index - b.question_index);
+    
+    return NextResponse.json(answers);
   } catch (error) {
     console.error("Error fetching answers:", error);
     return NextResponse.json(
