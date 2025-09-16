@@ -30,6 +30,7 @@ export function QuestionInput({
 }: QuestionInputProps) {
   const [selectedChoice, setSelectedChoice] = useState("");
   const [scaleValue, setScaleValue] = useState("");
+  const [selectedMultiChoices, setSelectedMultiChoices] = useState<string[]>([]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -46,6 +47,15 @@ export function QuestionInput({
   const handleScaleSelect = (value: string) => {
     setScaleValue(value);
     onAnswerChange(value);
+  };
+
+  const handleMultiChoiceToggle = (choice: string) => {
+    const newSelectedChoices = selectedMultiChoices.includes(choice)
+      ? selectedMultiChoices.filter(c => c !== choice)
+      : [...selectedMultiChoices, choice];
+    
+    setSelectedMultiChoices(newSelectedChoices);
+    onAnswerChange(newSelectedChoices.join(", "));
   };
 
   // Choice input (dropdown/buttons)
@@ -78,6 +88,49 @@ export function QuestionInput({
             {isSubmitting ? "Sending..." : "Continue"}
           </button>
         )}
+      </div>
+    );
+  }
+
+  // Multi-choice input (checkboxes)
+  if (question.type === "multi_choice" && question.options) {
+    return (
+      <div className="space-y-4">
+        <div className="space-y-2">
+          {question.options.map((option, index) => (
+            <label
+              key={index}
+              className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                selectedMultiChoices.includes(option)
+                  ? "bg-primary/10 border-primary"
+                  : "bg-base-100 border-base-300 hover:bg-base-200"
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={selectedMultiChoices.includes(option)}
+                onChange={() => handleMultiChoiceToggle(option)}
+                className="checkbox checkbox-primary mt-0.5"
+                disabled={isSubmitting}
+              />
+              <span className="text-sm leading-relaxed">{option}</span>
+            </label>
+          ))}
+        </div>
+        
+        <div className="text-xs text-base-content/60 px-2">
+          {selectedMultiChoices.length === 0 
+            ? "Select any that apply or continue without selecting" 
+            : `${selectedMultiChoices.length} selected`}
+        </div>
+        
+        <button
+          onClick={onSubmit}
+          disabled={isSubmitting}
+          className="w-full py-3 bg-primary text-primary-content rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-medium"
+        >
+          {isSubmitting ? "Sending..." : "Continue"}
+        </button>
       </div>
     );
   }

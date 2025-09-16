@@ -53,6 +53,32 @@ export async function GET() {
         ],
         created_at: "2025-09-15T12:42:00.000Z",
         updated_at: "2025-09-15T12:42:00.000Z"
+      },
+      {
+        id: "a1b2c3d4-e5f6-4789-abc1-234567890def",
+        slug: "evening",
+        title: "Evening Truth Pulse",
+        description: "Daily evening reflection designed to integrate truth, recognize patterns, and set strategic momentum for tomorrow.",
+        questions: [
+          {"index": 1, "key": "truth_question_selection", "text": "Today's Truth Question: Select the one that resonates most with you today", "type": "choice", "options": ["Where did I prove instead of express today?", "What unfinished idea created shame today?", "What would my future self have done differently?", "Where could I have used voice over hands?", "What truth would realign my team moving forward?"], "section": "truth"},
+          {"index": 2, "key": "truth_response", "text": "My Truth Response: Write 2-3 sentences capturing your authentic response to the question you selected", "type": "daily", "section": "truth"},
+          {"index": 3, "key": "shadow_patterns", "text": "Shadow Patterns Detected: Check any that showed up today", "type": "multi_choice", "options": ["Gladiator - Forcing outcomes, aggressive pushing", "Atlas - Over-controlling, carrying too much", "Hollow Performer - Proving worth through achievement", "Mirror Judge - Perfectionism paralysis"], "section": "shadow_genius"},
+          {"index": 4, "key": "shadow_response", "text": "Shadow Response: How did this pattern serve/limit me today?", "type": "daily", "section": "shadow_genius"},
+          {"index": 5, "key": "genius_activations", "text": "Genius Activations: Check any that were present today", "type": "multi_choice", "options": ["Mythic Pattern Smithing - Seeing deeper patterns and connections", "Fractal Systems Architect - Building scalable, elegant systems", "Energetic Resonance - Authentic influence and magnetism", "Archetypal Content - Creating content that hits primal truths"], "section": "shadow_genius"},
+          {"index": 6, "key": "genius_response", "text": "Genius Response: When did I feel most in my power today?", "type": "daily", "section": "shadow_genius"},
+          {"index": 7, "key": "resistance_patterns", "text": "What resistance showed up today?", "type": "multi_choice", "options": ["Launch avoidance", "Conflict delay", "Perfectionism loop", "Control spiral"], "section": "momentum"},
+          {"index": 8, "key": "energy_level", "text": "Energy Level: Rate your overall energy today", "type": "scale", "min": 1, "max": 10, "section": "momentum"},
+          {"index": 9, "key": "energy_insight", "text": "Energy Insight: What gave me energy vs. drained it today?", "type": "daily", "section": "momentum"},
+          {"index": 10, "key": "what_wants_completion", "text": "What Wants to Complete: What's been sitting unfinished that's creating background tension?", "type": "daily", "section": "action_bridge"},
+          {"index": 11, "key": "tomorrow_truth_move", "text": "Tomorrow's Truth Move: One specific action I can take tomorrow that aligns with my truth (not my proving)", "type": "daily", "section": "action_bridge"},
+          {"index": 12, "key": "breakthrough_action", "text": "72-Hour Breakthrough Action: What bold move could I make in the next 3 days that would shift my trajectory?", "type": "daily", "section": "action_bridge"},
+          {"index": 13, "key": "mrr_community_focus", "text": "MRR/Community Focus: How did today's actions serve my goals?", "type": "daily", "section": "strategic"},
+          {"index": 14, "key": "email_marketing_momentum", "text": "Email Marketing Momentum: What did I learn about my audience/message that I can apply tomorrow?", "type": "daily", "section": "strategic"},
+          {"index": 15, "key": "daily_gratitude", "text": "Daily Gratitude + Recognition: List 3 things you're genuinely grateful for + 1 thing you did well today", "type": "daily", "section": "synthesis"},
+          {"index": 16, "key": "tomorrow_intention", "text": "Tomorrow's Intention: If you could approach tomorrow from your highest self, what energy would you bring?", "type": "daily", "section": "synthesis"}
+        ],
+        created_at: "2025-09-15T13:59:00.000Z",
+        updated_at: "2025-09-15T13:59:00.000Z"
       }
     ];
 
