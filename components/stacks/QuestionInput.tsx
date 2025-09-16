@@ -49,6 +49,15 @@ export function QuestionInput({
   const handleScaleSelect = (value: string) => {
     setScaleValue(value);
     onAnswerChange(value);
+    
+    // Auto-submit when selecting the highest value on the scale
+    if (question.type === "scale") {
+      const max = question.max || 10;
+      if (parseInt(value) === max) {
+        // Use a small delay to ensure state updates complete
+        setTimeout(() => onSubmit(), 100);
+      }
+    }
   };
 
   const handleMultiChoiceToggle = (choice: string) => {
