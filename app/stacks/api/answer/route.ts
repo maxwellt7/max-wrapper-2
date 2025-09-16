@@ -13,15 +13,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Get session from memory storage
+    console.log(`🔍 [ANSWER] Looking for session: ${sessionId}, Total sessions: ${sessions.size}`);
+    console.log(`📋 [ANSWER] Available sessions:`, Array.from(sessions.keys()));
     const session = sessions.get(sessionId);
     
     if (!session) {
-      console.error("Session not found:", sessionId);
+      console.error(`❌ [ANSWER] Session not found: ${sessionId}`);
+      console.error(`💾 [ANSWER] Storage state - Total sessions: ${sessions.size}`);
+      console.error(`🗂️  [ANSWER] Available sessions:`, Array.from(sessions.keys()));
       return NextResponse.json(
         { error: "Session not found" },
         { status: 404 }
       );
     }
+    
+    console.log(`✅ [ANSWER] Session found: ${sessionId}, Current answers: ${session.answers?.length || 0}`);
 
     // Get current question from stack
     const questions = session.stack.questions;
@@ -63,6 +69,8 @@ export async function POST(request: NextRequest) {
 
     // Update the session in memory
     sessions.set(sessionId, session);
+    console.log(`✅ [ANSWER] Answer saved for session: ${sessionId}, Question: ${questionIndex}, Current progress: ${nextIndex}/${questions.length}`);
+    console.log(`📊 [ANSWER] Updated session answers count: ${session.answers.length}`);
 
     return NextResponse.json({
       success: true,

@@ -1,6 +1,20 @@
 // Shared session storage for demo purposes
 // In a production app, this would be a proper database or Redis
-export const sessions = new Map();
+
+// Use globalThis to persist storage across Next.js hot module reloads
+declare global {
+  var sessionStorage: Map<string, any> | undefined;
+}
+
+// Create or reuse the global sessions Map
+if (!globalThis.sessionStorage) {
+  globalThis.sessionStorage = new Map();
+  console.log("🔄 Initialized new session storage");
+} else {
+  console.log("♻️  Reusing existing session storage with", globalThis.sessionStorage.size, "sessions");
+}
+
+export const sessions = globalThis.sessionStorage;
 
 // Helper function to get stack data
 export const getStackData = (slug: string) => {

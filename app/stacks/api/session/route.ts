@@ -43,6 +43,8 @@ export async function POST(request: NextRequest) {
 
     // Store session in memory
     sessions.set(sessionId, session);
+    console.log(`✅ Session created: ${sessionId}, Total sessions: ${sessions.size}`);
+    console.log(`📝 Session details:`, { id: sessionId, title, stackSlug, questionsCount: session.stack.questions.length });
 
     return NextResponse.json(session);
   } catch (error) {
@@ -61,20 +63,27 @@ export async function GET(request: NextRequest) {
 
     if (sessionId) {
       // Get specific session from memory
+      console.log(`🔍 Looking for session: ${sessionId}, Total sessions: ${sessions.size}`);
+      console.log(`📋 Available sessions:`, Array.from(sessions.keys()));
       const session = sessions.get(sessionId);
       
       if (!session) {
-        console.error("Session not found:", sessionId);
+        console.error(`❌ Session not found: ${sessionId}`);
+        console.error(`💾 Storage state - Total sessions: ${sessions.size}`);
+        console.error(`🗂️  Available sessions:`, Array.from(sessions.keys()));
         return NextResponse.json(
           { error: "Session not found" },
           { status: 404 }
         );
       }
+      
+      console.log(`✅ Session found: ${sessionId}`);
 
       return NextResponse.json(session);
     }
 
     // Get all sessions (for demo purposes, return all stored sessions)
+    console.log(`📊 Fetching all sessions, Total: ${sessions.size}`);
     const allSessions = Array.from(sessions.values());
     
     return NextResponse.json(allSessions);
