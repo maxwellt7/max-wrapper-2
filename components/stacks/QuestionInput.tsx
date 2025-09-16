@@ -28,9 +28,11 @@ export function QuestionInput({
   onSubmit, 
   isSubmitting 
 }: QuestionInputProps) {
-  const [selectedChoice, setSelectedChoice] = useState("");
-  const [scaleValue, setScaleValue] = useState("");
-  const [selectedMultiChoices, setSelectedMultiChoices] = useState<string[]>([]);
+  const [selectedChoice, setSelectedChoice] = useState(currentAnswer || "");
+  const [scaleValue, setScaleValue] = useState(currentAnswer || "");
+  const [selectedMultiChoices, setSelectedMultiChoices] = useState<string[]>(
+    currentAnswer ? currentAnswer.split(", ") : []
+  );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -165,7 +167,7 @@ export function QuestionInput({
           <span>High</span>
         </div>
         
-        {scaleValue && (
+        {(scaleValue || currentAnswer) && (
           <button
             onClick={onSubmit}
             disabled={isSubmitting}
