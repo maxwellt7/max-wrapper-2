@@ -18,6 +18,15 @@ export async function POST(request: NextRequest) {
     const { data: session, error: sessionError } = await getSessionWithStack(sessionId);
     
     if (sessionError || !session) {
+      // Check if it's an invalid UUID format error
+      if (sessionError && sessionError.type === "INVALID_UUID") {
+        console.error(`❌ [ANSWER] Invalid session ID format: ${sessionId}`);
+        return NextResponse.json(
+          { error: "Invalid session ID format" },
+          { status: 400 }
+        );
+      }
+      
       console.error(`❌ [ANSWER] Session not found: ${sessionId}`, sessionError);
       return NextResponse.json(
         { error: "Session not found" },

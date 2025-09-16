@@ -77,6 +77,15 @@ export async function GET(request: NextRequest) {
       const { data: sessionRow, error: sessionError } = await getSessionWithStack(sessionId);
       
       if (sessionError || !sessionRow) {
+        // Check if it's an invalid UUID format error
+        if (sessionError && sessionError.type === "INVALID_UUID") {
+          console.error(`❌ Invalid session ID format: ${sessionId}`);
+          return NextResponse.json(
+            { error: "Invalid session ID format" },
+            { status: 400 }
+          );
+        }
+        
         console.error(`❌ Session not found: ${sessionId}`, sessionError);
         return NextResponse.json(
           { error: "Session not found" },
@@ -88,6 +97,7 @@ export async function GET(request: NextRequest) {
       const { data: answersData, error: answersError } = await getAnswersForSession(sessionId);
       
       if (answersError) {
+        // UUID validation was already handled above, so this is likely a different error
         console.error(`⚠️ Error fetching answers for session ${sessionId}:`, answersError);
       }
       

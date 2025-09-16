@@ -19,6 +19,15 @@ export async function GET(request: NextRequest) {
     const { data: answers, error: answersError } = await getAnswersForSession(sessionId);
     
     if (answersError) {
+      // Check if it's an invalid UUID format error
+      if (answersError.type === "INVALID_UUID") {
+        console.error(`❌ [ANSWERS] Invalid session ID format: ${sessionId}`);
+        return NextResponse.json(
+          { error: "Invalid session ID format" },
+          { status: 400 }
+        );
+      }
+      
       console.error(`❌ [ANSWERS] Error fetching answers for session ${sessionId}:`, answersError);
       return NextResponse.json(
         { error: "Failed to fetch answers" },

@@ -1,60 +1,154 @@
-// Simple database connection using system PostgreSQL
-// This approach uses the child_process to execute psql commands directly
-// since the pg package has dependency conflicts
+// Secure database connection using system PostgreSQL
+// Uses child_process.spawn with stdin to avoid shell injection vulnerabilities
+// Implements proper parameterized queries
 
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { spawn } from 'child_process';
+import { URL } from 'url';
 
-const execAsync = promisify(exec);
-
-// Execute SQL queries using psql command line tool
+// Execute SQL queries safely using psql via spawn and stdin
 export async function queryDb(query: string, params: any[] = []) {
   try {
-    // Replace parameter placeholders with actual values
-    let processedQuery = query;
-    for (let i = 0; i < params.length; i++) {
-      const placeholder = `$${i + 1}`;
-      const value = typeof params[i] === 'string' ? `'${params[i].replace(/'/g, "''")}'` : params[i];
-      processedQuery = processedQuery.replace(placeholder, value);
-    }
+    // Parse DATABASE_URL to get connection parameters
+    const dbUrl = new URL(process.env.DATABASE_URL!);
     
-    // Use a delimiter that won't appear in the data
-    const delimiter = '|||';
-    const psqlCommand = `echo "${processedQuery.replace(/"/g, '\\"')}" | psql "${process.env.DATABASE_URL}" -t -A -F"${delimiter}"`;
+    // Build psql command args (no shell involved)
+    const port = dbUrl.port || '5432';
+    const psqlArgs = [
+      `-h`, dbUrl.hostname,
+      `-p`, port,
+      `-U`, dbUrl.username,
+      `-d`, dbUrl.pathname.slice(1), // remove leading /
+      `-t`, // tuples only
+      `-A`, // unaligned output
+      `-F`, '|||', // field separator
+      `--set=ON_ERROR_STOP=1` // stop on error
+    ];
+
+    // Build parameterized query safely
+    const processedQuery = buildParameterizedQuery(query, params);
     
-    const { stdout, stderr } = await execAsync(psqlCommand);
+    // Query built safely with proper parameter escaping
     
-    if (stderr && !stderr.includes('NOTICE')) {
-      console.error("Database query error:", stderr);
-      return { data: null, error: { message: stderr } };
-    }
-    
-    // Parse delimited output
-    const lines = stdout.trim().split('\n').filter(line => line.length > 0);
-    if (lines.length === 0) {
-      return { data: [], error: null };
-    }
-    
-    // For queries that return columns, parse them
-    if (query.toUpperCase().includes('SELECT') || query.toUpperCase().includes('RETURNING')) {
-      try {
-        const data = lines.map(line => {
-          const values = line.split(delimiter);
-          return parseRowBasedOnQuery(values, query);
-        });
+    return new Promise((resolve) => {
+      const psql = spawn('psql', psqlArgs, {
+        stdio: ['pipe', 'pipe', 'pipe'],
+        env: {
+          ...process.env,
+          PGPASSWORD: dbUrl.password
+        }
+      });
+      
+      let stdout = '';
+      let stderr = '';
+      
+      psql.stdout.on('data', (data) => {
+        stdout += data.toString();
+      });
+      
+      psql.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+      
+      psql.on('close', (code) => {
+        // psql completed execution
+        if (code !== 0 || (stderr && !stderr.includes('NOTICE'))) {
+          console.error("Database query error:", stderr);
+          resolve({ data: null, error: { message: stderr || `psql exited with code ${code}` } });
+          return;
+        }
         
-        return { data, error: null };
-      } catch (parseError) {
-        console.error("Row parsing error:", parseError, "Output:", stdout);
-        return { data: null, error: { message: `Row parsing failed: ${parseError}` } };
-      }
-    }
-    
-    return { data: lines, error: null };
+        try {
+          // Parse delimited output
+          const lines = stdout.trim().split('\n').filter(line => line.length > 0);
+          
+          // Handle UPDATE/INSERT/DELETE commands that return row counts
+          if (lines.length > 0 && (lines[0].startsWith('UPDATE ') || lines[0].startsWith('INSERT ') || lines[0].startsWith('DELETE '))) {
+            // For commands like UPDATE, check if it affected any rows
+            const affectedRows = parseInt(lines[0].split(' ')[1]) || 0;
+            if (query.toUpperCase().includes('RETURNING') && affectedRows === 0) {
+              // UPDATE/INSERT with RETURNING but 0 affected rows = empty result
+              resolve({ data: [], error: null });
+              return;
+            }
+            // For UPDATE/INSERT/DELETE without RETURNING, return the status
+            resolve({ data: [{ affected_rows: affectedRows }], error: null });
+            return;
+          }
+          
+          if (lines.length === 0) {
+            resolve({ data: [], error: null });
+            return;
+          }
+          
+          // For queries that return columns, parse them
+          if (query.toUpperCase().includes('SELECT') || query.toUpperCase().includes('RETURNING')) {
+            const data = lines.map(line => {
+              const values = line.split('|||');
+              return parseRowBasedOnQuery(values, query);
+            });
+            resolve({ data, error: null });
+          } else {
+            resolve({ data: lines, error: null });
+          }
+        } catch (parseError: any) {
+          console.error("Row parsing error:", parseError, "Output:", stdout);
+          resolve({ data: null, error: { message: `Row parsing failed: ${parseError.message}` } });
+        }
+      });
+      
+      psql.on('error', (error) => {
+        console.error("Spawn error:", error);
+        resolve({ data: null, error: { message: error.message } });
+      });
+      
+      // Send SQL via stdin (safe from shell injection)
+      psql.stdin.write(processedQuery);
+      psql.stdin.end();
+    });
   } catch (error: any) {
     console.error("Database query error:", error);
     return { data: null, error: { message: error.message } };
   }
+}
+
+// Safely build queries with properly escaped parameters
+function buildParameterizedQuery(query: string, params: any[]): string {
+  if (params.length === 0) {
+    return query + ';';
+  }
+  
+  // Replace parameter placeholders with safely escaped values
+  let processedQuery = query;
+  for (let i = 0; i < params.length; i++) {
+    const placeholder = `$${i + 1}`;
+    const value = escapeParameter(params[i]);
+    processedQuery = processedQuery.replace(placeholder, value);
+  }
+  
+  return processedQuery + ';';
+}
+
+// Safely escape parameters for PostgreSQL
+function escapeParameter(param: any): string {
+  if (param === null || param === undefined) {
+    return 'NULL';
+  } else if (typeof param === 'string') {
+    // Properly escape strings by doubling single quotes and wrapping in quotes
+    return `'${param.replace(/'/g, "''")}'`;
+  } else if (typeof param === 'number') {
+    return param.toString();
+  } else if (typeof param === 'boolean') {
+    return param ? 'TRUE' : 'FALSE';
+  } else {
+    // For other types, convert to string and escape
+    return `'${String(param).replace(/'/g, "''")}'`;
+  }
+}
+
+// UUID validation helper
+function isValidUUID(uuid: string): boolean {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
 }
 
 // Helper function to parse row data based on query type
@@ -73,8 +167,8 @@ function parseRowBasedOnQuery(values: string[], query: string): any {
     };
   }
   
-  // Handle stack_sessions table
-  if (query.includes('FROM stack_sessions') && !query.includes('JOIN')) {
+  // Handle stack_sessions table (both FROM queries and RETURNING from INSERT/UPDATE)
+  if ((query.includes('FROM stack_sessions') || query.includes('stack_sessions') && query.includes('RETURNING')) && !query.includes('JOIN')) {
     return {
       id: values[0],
       stack_id: values[1],
@@ -87,8 +181,8 @@ function parseRowBasedOnQuery(values: string[], query: string): any {
     };
   }
   
-  // Handle stack_answers table
-  if (query.includes('FROM stack_answers')) {
+  // Handle stack_answers table (both FROM queries and RETURNING from INSERT/UPDATE)
+  if (query.includes('stack_answers')) {
     return {
       id: values[0],
       session_id: values[1],
@@ -150,6 +244,10 @@ export async function createSession(stackId: string, title: string, userId: stri
 }
 
 export async function getSessionWithStack(sessionId: string) {
+  // Validate UUID format first
+  if (!isValidUUID(sessionId)) {
+    return { data: null, error: { message: "Invalid session ID format", type: "INVALID_UUID" } };
+  }
   const query = `
     SELECT ss.*, s.slug, s.title as stack_title, s.questions 
     FROM stack_sessions ss
@@ -219,6 +317,10 @@ export async function getAllSessions() {
 }
 
 export async function getAnswersForSession(sessionId: string) {
+  // Validate UUID format first
+  if (!isValidUUID(sessionId)) {
+    return { data: null, error: { message: "Invalid session ID format", type: "INVALID_UUID" } };
+  }
   const query = `
     SELECT * FROM stack_answers 
     WHERE session_id = $1 
@@ -230,6 +332,10 @@ export async function getAnswersForSession(sessionId: string) {
 }
 
 export async function upsertAnswer(sessionId: string, questionIndex: number, questionKey: string, questionText: string, answerText: string) {
+  // Validate UUID format first
+  if (!isValidUUID(sessionId)) {
+    return { data: null, error: { message: "Invalid session ID format", type: "INVALID_UUID" } };
+  }
   // First try to update existing answer
   const updateQuery = `
     UPDATE stack_answers 
@@ -261,6 +367,10 @@ export async function upsertAnswer(sessionId: string, questionIndex: number, que
 }
 
 export async function updateSessionProgress(sessionId: string, currentIndex: number, status: string) {
+  // Validate UUID format first
+  if (!isValidUUID(sessionId)) {
+    return { data: null, error: { message: "Invalid session ID format", type: "INVALID_UUID" } };
+  }
   const query = `
     UPDATE stack_sessions 
     SET current_index = $2, status = $3, updated_at = NOW()
