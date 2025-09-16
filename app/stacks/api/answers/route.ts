@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sessions } from "@/lib/session-storage";
+import { getAnswersForSession } from "@/lib/db-connection";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,26 +13,24 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get session from memory storage
-    console.log(`🔍 [ANSWERS] Looking for session: ${sessionId}, Total sessions: ${sessions.size}`);
-    console.log(`📋 [ANSWERS] Available sessions:`, Array.from(sessions.keys()));
-    const session = sessions.get(sessionId);
+    // Get answers from database
+    console.log(`🔍 [ANSWERS] Looking for answers for session: ${sessionId}`);
     
-    if (!session) {
-      console.error(`❌ [ANSWERS] Session not found: ${sessionId}`);
-      console.error(`💾 [ANSWERS] Storage state - Total sessions: ${sessions.size}`);
-      console.error(`🗂️  [ANSWERS] Available sessions:`, Array.from(sessions.keys()));
-      // Return empty array for non-existent sessions to avoid errors
-      return NextResponse.json([]);
+    const { data: answers, error: answersError } = await getAnswersForSession(sessionId);
+    
+    if (answersError) {
+      console.error(`❌ [ANSWERS] Error fetching answers for session ${sessionId}:`, answersError);
+      return NextResponse.json(
+        { error: "Failed to fetch answers" },
+        { status: 500 }
+      );
     }
     
-    console.log(`✅ [ANSWERS] Session found: ${sessionId}, Answers count: ${session.answers?.length || 0}`);
-
-    // Return answers from session, sorted by question index
-    const answers = (session.answers || []).sort((a: any, b: any) => a.question_index - b.question_index);
-    console.log(`📊 [ANSWERS] Returning ${answers.length} answers for session: ${sessionId}`);
+    const answersArray = answers || [];
+    console.log(`✅ [ANSWERS] Answers fetched for session: ${sessionId}, Count: ${answersArray.length}`);
+    console.log(`📊 [ANSWERS] Returning ${answersArray.length} answers for session: ${sessionId}`);
     
-    return NextResponse.json(answers);
+    return NextResponse.json(answersArray);
   } catch (error) {
     console.error("Error fetching answers:", error);
     return NextResponse.json(

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sessions } from "@/lib/session-storage";
+import { getSessionWithStack, upsertAnswer, updateSessionProgress } from "@/lib/db-connection";
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,25 +12,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get session from memory storage
-    console.log(`🔍 [ANSWER] Looking for session: ${sessionId}, Total sessions: ${sessions.size}`);
-    console.log(`📋 [ANSWER] Available sessions:`, Array.from(sessions.keys()));
-    const session = sessions.get(sessionId);
+    // Get session from database with stack information
+    console.log(`🔍 [ANSWER] Looking for session: ${sessionId}`);
     
-    if (!session) {
-      console.error(`❌ [ANSWER] Session not found: ${sessionId}`);
-      console.error(`💾 [ANSWER] Storage state - Total sessions: ${sessions.size}`);
-      console.error(`🗂️  [ANSWER] Available sessions:`, Array.from(sessions.keys()));
+    const { data: session, error: sessionError } = await getSessionWithStack(sessionId);
+    
+    if (sessionError || !session) {
+      console.error(`❌ [ANSWER] Session not found: ${sessionId}`, sessionError);
       return NextResponse.json(
         { error: "Session not found" },
         { status: 404 }
       );
     }
     
-    console.log(`✅ [ANSWER] Session found: ${sessionId}, Current answers: ${session.answers?.length || 0}`);
+    console.log(`✅ [ANSWER] Session found: ${sessionId}`);
 
     // Get current question from stack
-    const questions = session.stack.questions;
+    const questions = session.stacks.questions;
     const question = questions[questionIndex];
     
     if (!question) {
@@ -40,37 +38,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Initialize answers array if it doesn't exist
-    if (!session.answers) {
-      session.answers = [];
+    // Save answer using upsert function
+    const { data: answerData, error: answerError } = await upsertAnswer(
+      sessionId,
+      questionIndex,
+      question.key,
+      question.text,
+      answer
+    );
+    
+    if (answerError) {
+      console.error(`❌ [ANSWER] Failed to save answer:`, answerError);
+      return NextResponse.json(
+        { error: "Failed to save answer" },
+        { status: 500 }
+      );
     }
-
-    // Save answer to session
-    const answerData = {
-      session_id: sessionId,
-      question_index: questionIndex,
-      question_key: question.key,
-      question_text: question.text,
-      answer_text: answer,
-      created_at: new Date().toISOString()
-    };
-
-    // Remove any existing answer for this question and add the new one
-    session.answers = session.answers.filter((a: any) => a.question_index !== questionIndex);
-    session.answers.push(answerData);
 
     // Update session progress
     const nextIndex = questionIndex + 1;
     const isCompleted = nextIndex >= questions.length;
     
-    session.current_index = nextIndex;
-    session.status = isCompleted ? 'completed' : 'in_progress';
-    session.updated_at = new Date().toISOString();
+    const { error: updateError } = await updateSessionProgress(
+      sessionId,
+      nextIndex,
+      isCompleted ? 'completed' : 'in_progress'
+    );
+    
+    if (updateError) {
+      console.error(`⚠️ [ANSWER] Failed to update session progress:`, updateError);
+      // Don't fail the request as answer was saved successfully
+    }
 
-    // Update the session in memory
-    sessions.set(sessionId, session);
     console.log(`✅ [ANSWER] Answer saved for session: ${sessionId}, Question: ${questionIndex}, Current progress: ${nextIndex}/${questions.length}`);
-    console.log(`📊 [ANSWER] Updated session answers count: ${session.answers.length}`);
 
     return NextResponse.json({
       success: true,
