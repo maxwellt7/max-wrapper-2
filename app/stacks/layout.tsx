@@ -29,7 +29,7 @@ export default function StacksLayout({ children }: StacksLayoutProps) {
           </div>
           
           {/* Main content */}
-          <div className="flex-1 overflow-hidden">
+          <div className="flex-1 overflow-auto">
             {children}
           </div>
         </SidebarInset>
