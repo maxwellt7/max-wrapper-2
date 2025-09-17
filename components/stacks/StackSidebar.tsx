@@ -140,22 +140,30 @@ export function StackSidebar() {
       </div>
 
       {/* Recent Sessions */}
-      <div className="flex-1 p-4 overflow-y-auto">
-        <h3 className="text-sm font-semibold text-base-content/70 uppercase tracking-wide mb-3">
+      <div className="flex-1 p-4 overflow-y-auto modern-scrollbar">
+        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
           Recent Sessions
         </h3>
         <div className="space-y-2">
           {loading ? (
-            <div className="animate-pulse space-y-2">
+            <div className="space-y-2">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-16 bg-base-300 rounded"></div>
+                <div key={i} className="glass-subtle rounded-lg p-3 animate-pulse">
+                  <div className="h-3 bg-slate-600 rounded shimmer mb-2"></div>
+                  <div className="h-2 bg-slate-700 rounded shimmer w-2/3 mb-1"></div>
+                  <div className="h-2 bg-slate-700 rounded shimmer w-1/2"></div>
+                </div>
               ))}
             </div>
           ) : sessions.length === 0 ? (
-            <div className="text-center text-base-content/50 py-8">
-              <span className="w-12 h-12 mx-auto mb-2 opacity-50 text-4xl">⏰</span>
-              <p className="text-sm">No sessions yet</p>
-              <p className="text-xs">Start your first stack above</p>
+            <div className="glass-subtle rounded-lg p-4 text-center">
+              <div className="w-8 h-8 bg-slate-500/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="text-slate-400 text-xs mb-1">No sessions yet</div>
+              <div className="text-slate-500 text-xs">Start your first stack above</div>
             </div>
           ) : (
             sessions.map((session) => (
@@ -164,26 +172,35 @@ export function StackSidebar() {
                 href={`/stacks/${session.stack.slug}/${session.id}`}
                 className="block"
               >
-                <div className={`p-3 rounded-lg transition-colors border ${
+                <div className={`group glass-subtle rounded-lg p-3 transition-all duration-200 hover:scale-[1.01] border ${
                   pathname.includes(session.id)
-                    ? "bg-primary/10 border-primary/20"
-                    : "hover:bg-base-300 border-transparent"
+                    ? "border-blue-400/50 bg-blue-500/10 glow-primary"
+                    : "border-transparent hover:border-slate-600/50 hover:glass"
                 }`}>
                   <div className="flex items-start gap-3">
-                    {session.status === "completed" ? (
-                      <span className="w-5 h-5 text-success mt-0.5 text-lg">✅</span>
-                    ) : (
-                      <span className="w-5 h-5 text-warning mt-0.5 text-lg">⏰</span>
-                    )}
+                    <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 transition-all duration-200 ${
+                      session.status === "completed" 
+                        ? "bg-green-400 group-hover:glow-success" 
+                        : "bg-blue-400 group-hover:glow-primary"
+                    }`}></div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-base-content truncate">
+                      <div className="font-medium text-slate-300 group-hover:text-white text-sm truncate transition-colors">
                         {session.title}
                       </div>
-                      <div className="text-sm text-base-content/70 truncate">
+                      <div className="text-xs text-slate-500 group-hover:text-slate-400 truncate transition-colors">
                         {session.stack.title}
                       </div>
-                      <div className="text-xs text-base-content/50 mt-1">
-                        {new Date(session.created_at).toLocaleDateString()}
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${
+                          session.status === 'completed' 
+                            ? 'bg-green-500/20 text-green-400' 
+                            : 'bg-blue-500/20 text-blue-400'
+                        }`}>
+                          {session.status}
+                        </span>
+                        <div className="text-xs text-slate-500">
+                          {new Date(session.created_at).toLocaleDateString()}
+                        </div>
                       </div>
                     </div>
                   </div>

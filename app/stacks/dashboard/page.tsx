@@ -79,83 +79,101 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">AI Performance Analysis</h1>
-          <p className="text-muted-foreground mt-2">
-            Discover hidden mental loops and performance patterns from your stacks responses
-          </p>
-        </div>
-        <Button 
-          onClick={fetchAnalysis} 
-          disabled={loading}
-          className="gap-2"
-        >
-          <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-          {loading ? 'Analyzing...' : 'Refresh Analysis'}
-        </Button>
-      </div>
-
-      {error && (
-        <Card className="border-destructive">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-2 text-destructive">
-              <AlertTriangle className="h-5 w-5" />
-              <p>Error: {error}</p>
+    <div className="min-h-full p-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-3 rounded-2xl glass glow-primary">
+                <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014.846 21H9.154a3.374 3.374 0 00-3.182-2.10l-.548-.547z" />
+                </svg>
+              </div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
+                AI Performance Analysis
+              </h1>
             </div>
-          </CardContent>
-        </Card>
-      )}
+            <p className="text-slate-300 text-lg">
+              Discover hidden mental loops and performance patterns from your stacks responses
+            </p>
+          </div>
+          <div className="glass-subtle rounded-xl p-2 hover:glass transition-all duration-200">
+            <Button 
+              onClick={fetchAnalysis} 
+              disabled={loading}
+              className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/30 text-blue-300 hover:text-blue-200 hover:border-blue-400/50 transition-all duration-200"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              {loading ? 'Analyzing...' : 'Refresh Analysis'}
+            </Button>
+          </div>
+        </div>
 
-      {loading && !analysis && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-center py-12">
-              <div className="text-center space-y-3">
-                <Brain className="h-12 w-12 animate-pulse mx-auto text-primary" />
-                <p className="text-lg font-medium">Analyzing your responses...</p>
-                <p className="text-muted-foreground">This may take a moment as AI processes your data</p>
+        {error && (
+          <div className="glass rounded-2xl border border-red-400/30 p-6">
+            <div className="flex items-center gap-3 text-red-400">
+              <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center glow-destructive">
+                <AlertTriangle className="h-4 w-4" />
+              </div>
+              <p className="font-medium">Error: {error}</p>
+            </div>
+          </div>
+        )}
+
+        {loading && !analysis && (
+          <div className="glass rounded-2xl p-12">
+            <div className="text-center space-y-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/30 to-purple-500/30 flex items-center justify-center mx-auto glow-primary">
+                <Brain className="h-8 w-8 animate-pulse text-blue-400" />
+              </div>
+              <div>
+                <p className="text-xl font-semibold text-slate-200 mb-2">Analyzing your responses...</p>
+                <p className="text-slate-400">This may take a moment as AI processes your data</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          </div>
+        )}
 
-      {analysis && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Mental Loops Card */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingDown className="h-5 w-5 text-destructive" />
-                Hidden Mental Loops
-              </CardTitle>
-              <CardDescription>
-                Patterns that may be sabotaging your performance ({analysis.mentalLoops.length} identified)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-64">
-                <div className="space-y-4">
+        {analysis && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Mental Loops Card */}
+            <div className="lg:col-span-2 glass rounded-2xl p-6 border border-red-400/20">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500/30 to-orange-500/30 flex items-center justify-center glow-destructive">
+                  <TrendingDown className="h-5 w-5 text-red-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-200">Hidden Mental Loops</h3>
+                  <p className="text-sm text-slate-400">
+                    Patterns that may be sabotaging your performance ({analysis.mentalLoops.length} identified)
+                  </p>
+                </div>
+              </div>
+              
+              <ScrollArea className="h-64 modern-scrollbar">
+                <div className="space-y-4 pr-4">
                   {analysis.mentalLoops.map((loop, index) => (
-                    <div key={index} className="border rounded-lg p-4 space-y-3">
+                    <div key={index} className="glass-subtle rounded-xl p-4 border border-slate-600/30 space-y-3">
                       <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-foreground">{loop.pattern}</h4>
-                        <Badge variant={getImpactColor(loop.impact)}>
+                        <h4 className="font-semibold text-slate-200">{loop.pattern}</h4>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          loop.impact === 'high' ? 'bg-red-500/20 text-red-400' :
+                          loop.impact === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                          'bg-gray-500/20 text-gray-400'
+                        }`}>
                           {loop.impact} impact
-                        </Badge>
+                        </span>
                       </div>
-                      <p className="text-muted-foreground text-sm">{loop.description}</p>
-                      <div className="text-xs text-muted-foreground">
+                      <p className="text-slate-400 text-sm">{loop.description}</p>
+                      <div className="text-xs text-slate-500">
                         Frequency: {loop.frequency} occurrences
                       </div>
                       {loop.examples.length > 0 && (
-                        <div className="space-y-1">
-                          <p className="text-xs font-medium text-foreground">Examples:</p>
+                        <div className="space-y-2">
+                          <p className="text-xs font-medium text-slate-300">Examples:</p>
                           {loop.examples.map((example, i) => (
-                            <p key={i} className="text-xs text-muted-foreground italic pl-2 border-l-2">
+                            <p key={i} className="text-xs text-slate-400 italic pl-3 border-l-2 border-red-400/30">
                               "{example}"
                             </p>
                           ))}
@@ -165,40 +183,45 @@ export default function DashboardPage() {
                   ))}
                 </div>
               </ScrollArea>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Performance Accelerators Card */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                Performance Accelerators
-              </CardTitle>
-              <CardDescription>
-                Patterns that are boosting your performance ({analysis.performanceAccelerators.length} identified)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-64">
-                <div className="space-y-4">
+            {/* Performance Accelerators Card */}
+            <div className="lg:col-span-2 glass rounded-2xl p-6 border border-blue-400/20">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500/30 to-cyan-500/30 flex items-center justify-center glow-primary">
+                  <TrendingUp className="h-5 w-5 text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-200">Performance Accelerators</h3>
+                  <p className="text-sm text-slate-400">
+                    Patterns that are boosting your performance ({analysis.performanceAccelerators.length} identified)
+                  </p>
+                </div>
+              </div>
+              
+              <ScrollArea className="h-64 modern-scrollbar">
+                <div className="space-y-4 pr-4">
                   {analysis.performanceAccelerators.map((accelerator, index) => (
-                    <div key={index} className="border rounded-lg p-4 space-y-3">
+                    <div key={index} className="glass-subtle rounded-xl p-4 border border-slate-600/30 space-y-3">
                       <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-foreground">{accelerator.pattern}</h4>
-                        <Badge variant={getStrengthColor(accelerator.strength)}>
+                        <h4 className="font-semibold text-slate-200">{accelerator.pattern}</h4>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          accelerator.strength === 'high' ? 'bg-green-500/20 text-green-400' :
+                          accelerator.strength === 'medium' ? 'bg-blue-500/20 text-blue-400' :
+                          'bg-gray-500/20 text-gray-400'
+                        }`}>
                           {accelerator.strength} strength
-                        </Badge>
+                        </span>
                       </div>
-                      <p className="text-muted-foreground text-sm">{accelerator.description}</p>
-                      <div className="text-xs text-muted-foreground">
+                      <p className="text-slate-400 text-sm">{accelerator.description}</p>
+                      <div className="text-xs text-slate-500">
                         Frequency: {accelerator.frequency} occurrences
                       </div>
                       {accelerator.examples.length > 0 && (
-                        <div className="space-y-1">
-                          <p className="text-xs font-medium text-foreground">Examples:</p>
+                        <div className="space-y-2">
+                          <p className="text-xs font-medium text-slate-300">Examples:</p>
                           {accelerator.examples.map((example, i) => (
-                            <p key={i} className="text-xs text-muted-foreground italic pl-2 border-l-2">
+                            <p key={i} className="text-xs text-slate-400 italic pl-3 border-l-2 border-blue-400/30">
                               "{example}"
                             </p>
                           ))}
@@ -208,79 +231,102 @@ export default function DashboardPage() {
                   ))}
                 </div>
               </ScrollArea>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Overall Insights */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-primary" />
-                Key Insights
-              </CardTitle>
-              <CardDescription>Overall patterns and themes</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h4 className="text-sm font-medium text-foreground mb-2">Dominant Themes</h4>
-                <div className="flex flex-wrap gap-1">
-                  {analysis.overallInsights.dominantThemes.map((theme, index) => (
-                    <Badge key={index} variant="secondary" className="text-xs">
-                      {theme}
-                    </Badge>
-                  ))}
+            {/* Key Insights */}
+            <div className="glass rounded-2xl p-6 border border-purple-400/20">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500/30 to-pink-500/30 flex items-center justify-center glow-secondary">
+                  <Lightbulb className="h-5 w-5 text-purple-400" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-200">Key Insights</h3>
+                  <p className="text-sm text-slate-400">Overall patterns and themes</p>
                 </div>
               </div>
-              <Separator />
-              <div>
-                <h4 className="text-sm font-medium text-foreground mb-2">Emotional Patterns</h4>
-                <div className="flex flex-wrap gap-1">
-                  {analysis.overallInsights.emotionalPatterns.map((pattern, index) => (
-                    <Badge key={index} variant="outline" className="text-xs">
-                      {pattern}
-                    </Badge>
-                  ))}
+              
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-sm font-medium text-slate-300 mb-2">Dominant Themes</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {analysis.overallInsights.dominantThemes.map((theme, index) => (
+                      <span key={index} className="px-2 py-1 rounded-full text-xs bg-purple-500/20 text-purple-300 border border-purple-400/30">
+                        {theme}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="h-px bg-gradient-to-r from-transparent via-slate-600 to-transparent" />
+                <div>
+                  <h4 className="text-sm font-medium text-slate-300 mb-2">Emotional Patterns</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {analysis.overallInsights.emotionalPatterns.map((pattern, index) => (
+                      <span key={index} className="px-2 py-1 rounded-full text-xs bg-slate-500/20 text-slate-300 border border-slate-400/30">
+                        {pattern}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Recommendations */}
-          <Card>
-            <CardHeader>
-              <CardTitle>AI Recommendations</CardTitle>
-              <CardDescription>Actionable insights for improvement</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
+            {/* AI Recommendations */}
+            <div className="glass rounded-2xl p-6 border border-cyan-400/20">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/30 to-blue-500/30 flex items-center justify-center glow-accent">
+                  <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-200">AI Recommendations</h3>
+                  <p className="text-sm text-slate-400">Actionable insights for improvement</p>
+                </div>
+              </div>
+              
+              <ul className="space-y-3">
                 {analysis.overallInsights.recommendations.map((rec, index) => (
-                  <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                    <span className="text-primary font-bold">•</span>
+                  <li key={index} className="text-sm text-slate-400 flex items-start gap-3">
+                    <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 mt-2 flex-shrink-0 glow-accent"></span>
                     {rec}
                   </li>
                 ))}
               </ul>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Analysis Summary */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Analysis Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="flex items-center justify-between">
-              <div className="text-sm text-muted-foreground">
-                <p>Sessions analyzed: <strong>{analysis.sessionsAnalyzed}</strong></p>
-                <p>Analysis date: <strong>{new Date(analysis.analysisDate).toLocaleDateString()}</strong></p>
+            {/* Analysis Summary */}
+            <div className="lg:col-span-2 glass rounded-2xl p-6 border border-slate-600/30">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-500/30 to-gray-500/30 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-slate-200">Analysis Summary</h3>
               </div>
-              <div className="text-sm text-muted-foreground text-right">
-                <p>Mental loops found: <strong className="text-destructive">{analysis.mentalLoops.length}</strong></p>
-                <p>Accelerators found: <strong className="text-primary">{analysis.performanceAccelerators.length}</strong></p>
+              
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-blue-400 mb-1">{analysis.sessionsAnalyzed}</div>
+                  <div className="text-sm text-slate-400">Sessions analyzed</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-red-400 mb-1">{analysis.mentalLoops.length}</div>
+                  <div className="text-sm text-slate-400">Mental loops found</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-400 mb-1">{analysis.performanceAccelerators.length}</div>
+                  <div className="text-sm text-slate-400">Accelerators found</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-sm text-slate-400 mb-1">Analysis date</div>
+                  <div className="text-sm font-medium text-slate-300">{new Date(analysis.analysisDate).toLocaleDateString()}</div>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
