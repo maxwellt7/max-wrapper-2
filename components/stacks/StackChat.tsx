@@ -329,10 +329,10 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
   };
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex-1 flex flex-col min-h-full">
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        <div className="max-w-4xl mx-auto space-y-4">
+      <div className="flex-1 overflow-y-auto p-8 modern-scrollbar">
+        <div className="max-w-4xl mx-auto space-y-6">
           {messages.map((message) => (
             <MessageBubble
               key={message.id}
@@ -344,18 +344,25 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
           
           {/* Show Manifesto for Morning Stack */}
           {session.stack.slug === 'morning' && showManifesto && manifestoData && (
-            <div className="my-6">
+            <div className="my-8">
               <ManifestoDisplay data={manifestoData} />
             </div>
           )}
 
           {isGeneratingSummary && (
-            <MessageBubble
-              role="assistant"
-              content="I'm generating your personalized summary... This may take a moment. ✨"
-              timestamp={new Date().toISOString()}
-              isLoading
-            />
+            <div className="flex justify-center">
+              <div className="glass rounded-2xl p-6 border border-blue-400/20 max-w-md">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/30 to-purple-500/30 flex items-center justify-center glow-primary">
+                    <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                  <div>
+                    <div className="text-slate-200 font-medium text-sm">Generating summary...</div>
+                    <div className="text-slate-400 text-xs">This may take a moment ✨</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
           
           <div ref={messagesEndRef} />
@@ -364,8 +371,8 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
 
       {/* Input area */}
       {session.status !== "completed" && session.current_index < session.stack.questions.length && (
-        <div className="border-t border-base-300 p-4 bg-base-100">
-          <div className="max-w-4xl mx-auto">
+        <div className="border-t border-slate-700/30 glass-subtle backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto p-6">
             <QuestionInput
               question={session.stack.questions[session.current_index]}
               currentAnswer={currentAnswer}

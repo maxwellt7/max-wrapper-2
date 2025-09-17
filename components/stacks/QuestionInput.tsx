@@ -69,20 +69,31 @@ export function QuestionInput({
   // Choice input (dropdown/buttons)
   if (question.type === "choice" && question.options) {
     return (
-      <div className="space-y-4">
-        <div className="grid gap-2">
+      <div className="space-y-6">
+        <div className="grid gap-3">
           {question.options.map((option, index) => (
             <button
               key={index}
               onClick={() => handleChoiceSelect(option)}
-              className={`p-3 text-left rounded-lg border transition-colors ${
+              className={`group p-4 text-left rounded-xl border transition-all duration-200 hover:scale-[1.01] ${
                 selectedChoice === option
-                  ? "bg-primary text-primary-content border-primary"
-                  : "bg-base-100 border-base-300 hover:bg-base-200"
+                  ? "glass border-blue-400/50 text-blue-300 glow-primary"
+                  : "glass-subtle border-slate-600/30 hover:border-slate-500/50 text-slate-300 hover:text-white hover:glass"
               }`}
               disabled={isSubmitting}
             >
-              {option}
+              <div className="flex items-center gap-3">
+                <div className={`w-4 h-4 rounded-full border-2 transition-all duration-200 ${
+                  selectedChoice === option
+                    ? "border-blue-400 bg-blue-400 glow-primary"
+                    : "border-slate-500 group-hover:border-slate-400"
+                }`}>
+                  {selectedChoice === option && (
+                    <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
+                  )}
+                </div>
+                <span className="font-medium">{option}</span>
+              </div>
             </button>
           ))}
         </div>
@@ -91,9 +102,16 @@ export function QuestionInput({
           <button
             onClick={onSubmit}
             disabled={isSubmitting}
-            className="w-full py-3 bg-primary text-primary-content rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-medium"
+            className="w-full py-4 glass border border-blue-400/30 rounded-xl text-blue-300 hover:text-blue-200 hover:border-blue-400/50 transition-all duration-200 font-semibold hover:scale-[1.02] glow-primary disabled:opacity-50 disabled:scale-100"
           >
-            {isSubmitting ? "Sending..." : "Continue"}
+            {isSubmitting ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                Sending...
+              </div>
+            ) : (
+              "Continue"
+            )}
           </button>
         )}
       </div>
@@ -103,41 +121,61 @@ export function QuestionInput({
   // Multi-choice input (checkboxes)
   if (question.type === "multi_choice" && question.options) {
     return (
-      <div className="space-y-4">
-        <div className="space-y-2">
+      <div className="space-y-6">
+        <div className="space-y-3">
           {question.options.map((option, index) => (
             <label
               key={index}
-              className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+              className={`group flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:scale-[1.01] ${
                 selectedMultiChoices.includes(option)
-                  ? "bg-primary/10 border-primary"
-                  : "bg-base-100 border-base-300 hover:bg-base-200"
+                  ? "glass border-blue-400/50 text-blue-300"
+                  : "glass-subtle border-slate-600/30 hover:border-slate-500/50 text-slate-300 hover:text-white hover:glass"
               }`}
             >
+              <div className={`w-5 h-5 rounded border-2 transition-all duration-200 flex items-center justify-center mt-0.5 ${
+                selectedMultiChoices.includes(option)
+                  ? "border-blue-400 bg-blue-400 glow-primary"
+                  : "border-slate-500 group-hover:border-slate-400"
+              }`}>
+                {selectedMultiChoices.includes(option) && (
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </div>
               <input
                 type="checkbox"
                 checked={selectedMultiChoices.includes(option)}
                 onChange={() => handleMultiChoiceToggle(option)}
-                className="checkbox checkbox-primary mt-0.5"
+                className="sr-only"
                 disabled={isSubmitting}
               />
-              <span className="text-sm leading-relaxed">{option}</span>
+              <span className="font-medium leading-relaxed">{option}</span>
             </label>
           ))}
         </div>
         
-        <div className="text-xs text-base-content/60 px-2">
-          {selectedMultiChoices.length === 0 
-            ? "Select any that apply or continue without selecting" 
-            : `${selectedMultiChoices.length} selected`}
+        <div className="glass-subtle rounded-lg p-3 text-center">
+          <div className="text-xs text-slate-400">
+            {selectedMultiChoices.length === 0 
+              ? "Select any that apply or continue without selecting" 
+              : `${selectedMultiChoices.length} option${selectedMultiChoices.length !== 1 ? 's' : ''} selected`}
+          </div>
         </div>
         
         <button
           onClick={onSubmit}
           disabled={isSubmitting}
-          className="w-full py-3 bg-primary text-primary-content rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 font-medium"
+          className="w-full py-4 glass border border-blue-400/30 rounded-xl text-blue-300 hover:text-blue-200 hover:border-blue-400/50 transition-all duration-200 font-semibold hover:scale-[1.02] glow-primary disabled:opacity-50 disabled:scale-100"
         >
-          {isSubmitting ? "Sending..." : "Continue"}
+          {isSubmitting ? (
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+              Sending...
+            </div>
+          ) : (
+            "Continue"
+          )}
         </button>
       </div>
     );
@@ -150,16 +188,16 @@ export function QuestionInput({
     const scaleOptions = Array.from({ length: max - min + 1 }, (_, i) => min + i);
 
     return (
-      <div className="space-y-4">
-        <div className="grid grid-cols-5 gap-2">
+      <div className="space-y-6">
+        <div className="grid grid-cols-5 gap-3">
           {scaleOptions.map((value) => (
             <button
               key={value}
               onClick={() => handleScaleSelect(value.toString())}
-              className={`p-3 text-center rounded-lg border transition-colors ${
+              className={`group p-4 text-center rounded-xl border transition-all duration-200 hover:scale-[1.05] font-bold text-lg ${
                 scaleValue === value.toString()
-                  ? "bg-primary text-primary-content border-primary"
-                  : "bg-base-100 border-base-300 hover:bg-base-200"
+                  ? "glass border-blue-400/50 text-blue-300 glow-primary"
+                  : "glass-subtle border-slate-600/30 hover:border-slate-500/50 text-slate-300 hover:text-white hover:glass"
               }`}
               disabled={isSubmitting}
             >
@@ -168,7 +206,7 @@ export function QuestionInput({
           ))}
         </div>
         
-        <div className="flex justify-between text-xs text-base-content/60">
+        <div className="flex justify-between text-xs text-slate-400 px-2">
           <span>Low</span>
           <span>High</span>
         </div>
@@ -188,32 +226,41 @@ export function QuestionInput({
 
   // Default text input
   return (
-    <div className="space-y-3">
-      <textarea
-        value={currentAnswer}
-        onChange={(e) => onAnswerChange(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder="Type your response here... (Press Enter to send, Shift+Enter for new line)"
-        className="w-full min-h-[100px] p-3 border border-base-300 rounded-lg bg-base-100 text-base-content focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-        disabled={isSubmitting}
-        maxLength={2000}
-      />
-      
-      <div className="flex justify-between items-center">
-        <div className="text-xs text-base-content/50">
-          Press Enter to send, Shift+Enter for new line
-        </div>
-        <div className="text-xs text-base-content/50">
+    <div className="space-y-6">
+      <div className="relative">
+        <textarea
+          value={currentAnswer}
+          onChange={(e) => onAnswerChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Type your response here... (Press Enter to send, Shift+Enter for new line)"
+          className="w-full min-h-[140px] p-6 glass border border-slate-600/30 rounded-xl text-slate-200 placeholder-slate-400 resize-none focus:outline-none focus:border-blue-400/50 focus:glow-primary transition-all duration-200 modern-scrollbar backdrop-blur-xl"
+          disabled={isSubmitting}
+          maxLength={2000}
+        />
+        <div className="absolute bottom-3 right-3 text-xs text-slate-500">
           {currentAnswer.length}/2000
+        </div>
+      </div>
+      
+      <div className="glass-subtle rounded-lg p-3 text-center">
+        <div className="text-xs text-slate-400">
+          Press Enter to send, Shift+Enter for new line
         </div>
       </div>
       
       <button
         onClick={onSubmit}
         disabled={!currentAnswer.trim() || isSubmitting}
-        className="w-full py-3 bg-primary text-primary-content rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+        className="w-full py-4 glass border border-blue-400/30 rounded-xl text-blue-300 hover:text-blue-200 hover:border-blue-400/50 transition-all duration-200 font-semibold hover:scale-[1.02] glow-primary disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed"
       >
-        {isSubmitting ? "Sending..." : "Send"}
+        {isSubmitting ? (
+          <div className="flex items-center justify-center gap-2">
+            <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+            Sending...
+          </div>
+        ) : (
+          "Send"
+        )}
       </button>
     </div>
   );
