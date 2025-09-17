@@ -309,6 +309,17 @@ code {
     50% { filter: drop-shadow(0 0 12px rgba(106, 166, 255, 0.6)) drop-shadow(0 0 30px rgba(106, 166, 255, 0.3)); }
   }
   
+  @keyframes fadeInUp {
+    0% { 
+      opacity: 0; 
+      transform: translateY(30px); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateY(0); 
+    }
+  }
+  
   .shimmer {
     background: linear-gradient(90deg, transparent, rgba(106, 166, 255, 0.1), transparent);
     background-size: 200% 100%;
