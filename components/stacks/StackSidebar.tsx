@@ -67,6 +67,26 @@ export function StackSidebar() {
         <h2 className="text-xl font-bold text-base-content">Stacks</h2>
       </div>
 
+      {/* AI Dashboard Link */}
+      <div className="p-4 border-b border-base-300">
+        <Link
+          href="/stacks/dashboard"
+          className="block"
+        >
+          <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-primary/10 transition-colors bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20">
+            <span className="w-5 h-5 text-primary text-lg">🧠</span>
+            <div className="flex-1 min-w-0">
+              <div className="font-medium text-primary">
+                AI Performance Analysis
+              </div>
+              <div className="text-sm text-primary/70">
+                Discover mental loops & patterns
+              </div>
+            </div>
+          </div>
+        </Link>
+      </div>
+
       {/* Available Stacks */}
       <div className="p-4 border-b border-base-300">
         <h3 className="text-sm font-semibold text-base-content/70 uppercase tracking-wide mb-3">
