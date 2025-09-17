@@ -41,6 +41,8 @@ export function StackSidebar() {
       if (stacksResponse.ok) {
         const stacksData = await stacksResponse.json();
         setStacks(stacksData);
+      } else {
+        console.error("Failed to fetch stacks:", stacksResponse.status, stacksResponse.statusText);
       }
 
       // Fetch user sessions
@@ -48,9 +50,11 @@ export function StackSidebar() {
       if (sessionsResponse.ok) {
         const sessionsData = await sessionsResponse.json();
         setSessions(sessionsData);
+      } else {
+        console.error("Failed to fetch sessions:", sessionsResponse.status, sessionsResponse.statusText);
       }
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Network error fetching sidebar data:", error);
     } finally {
       setLoading(false);
     }
