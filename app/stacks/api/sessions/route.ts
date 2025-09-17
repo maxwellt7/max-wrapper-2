@@ -1,48 +1,40 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/utils/supabase/server";
+import { getAllSessions } from "@/lib/db-connection";
 
 export async function GET() {
   try {
-    const supabase = await createClient();
+    console.log("📊 Fetching all sessions");
 
-    // Get current user
-    const { data: { user } } = await supabase.auth.getUser();
-
-    // Get all sessions for current user (or anonymous sessions if no user)
-    const query = supabase
-      .from('stack_sessions')
-      .select(`
-        *,
-        stacks (*)
-      `)
-      .order('created_at', { ascending: false });
-
-    // If user is authenticated, get their sessions, otherwise get sessions without user_id
-    const { data: sessions, error } = user 
-      ? await query.eq('user_id', user.id)
-      : await query.is('user_id', null);
-
-    if (error) {
-      console.error("Error fetching sessions:", error);
+    const { data: sessions, error } = await getAllSessions();
+    
+    if (error || !sessions) {
+      console.error("❌ Database error fetching sessions:", error);
       return NextResponse.json(
         { error: "Failed to fetch sessions" },
         { status: 500 }
       );
     }
 
-    // Format response to match expected structure
-    const formattedSessions = sessions?.map(session => ({
-      ...session,
+    // Format sessions to match expected frontend structure  
+    const formattedSessions = sessions.map(session => ({
+      id: session.id,
+      title: session.title,
+      status: session.status,
+      current_index: session.current_index,
+      created_at: session.created_at,
+      updated_at: session.updated_at,
       stack: {
         slug: session.stacks.slug,
         title: session.stacks.title,
         questions: session.stacks.questions
       }
-    })) || [];
+    }));
 
+    console.log(`✅ Found ${formattedSessions.length} sessions`);
     return NextResponse.json(formattedSessions);
+
   } catch (error) {
-    console.error("Error fetching sessions:", error);
+    console.error("❌ Error fetching sessions:", error);
     return NextResponse.json(
       { error: "Failed to fetch sessions" },
       { status: 500 }
