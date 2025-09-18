@@ -351,14 +351,14 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
 
           {isGeneratingSummary && (
             <div className="flex justify-center">
-              <div className="glass rounded-2xl p-6 border border-blue-400/20 max-w-md">
+              <div className="glass rounded-2xl p-6 border max-w-md" style={{borderColor: 'rgb(var(--primary) / 0.3)'}}>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500/30 to-purple-500/30 flex items-center justify-center glow-primary">
-                    <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{backgroundColor: 'rgb(var(--primary) / 0.15)'}}>
+                    <div className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin" style={{borderColor: 'rgb(var(--primary))', borderTopColor: 'transparent'}}></div>
                   </div>
                   <div>
-                    <div className="text-slate-200 font-medium text-sm">Generating summary...</div>
-                    <div className="text-slate-400 text-xs">This may take a moment ✨</div>
+                    <div className="font-medium text-sm" style={{color: 'rgb(var(--fg))'}}>Generating summary...</div>
+                    <div className="text-xs" style={{color: 'rgb(var(--muted))'}}>This may take a moment ✨</div>
                   </div>
                 </div>
               </div>
@@ -371,7 +371,7 @@ export function StackChat({ session, onSessionUpdate }: StackChatProps) {
 
       {/* Input area */}
       {session.status !== "completed" && session.current_index < session.stack.questions.length && (
-        <div className="border-t border-slate-700/30 glass-subtle backdrop-blur-sm">
+        <div className="border-t glass-subtle backdrop-blur-sm" style={{borderColor: 'rgb(var(--border) / 0.5)'}}>
           <div className="max-w-4xl mx-auto p-6">
             <QuestionInput
               question={session.stack.questions[session.current_index]}

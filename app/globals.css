@@ -240,6 +240,9 @@ code {
     --glow-success: 147 197 153; /* #93C599 */
     --glow-warn: 251 191 36; /* #FBBF24 */
     --glow-destructive: 239 68 68; /* #EF4444 */
+    
+    /* Focus ring color for accessibility */
+    --ring: 134 168 201; /* Same as primary for consistency */
   }
 }
 

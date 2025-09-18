@@ -98,15 +98,15 @@ export function StackSidebar() {
 
       {/* Available Stacks */}
       <div className="p-4 border-b" style={{borderColor: 'rgb(var(--border) / 0.3)'}}>
-        <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{color: 'rgb(99, 112, 129)'}}>
+        <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{color: 'rgb(var(--muted))'}}>
           Available Stacks
         </h3>
         <div className="space-y-2">
           {loading ? (
             <div className="space-y-2">
               <div className="glass-subtle rounded-lg p-3 animate-pulse">
-                <div className="h-4 rounded shimmer mb-2" style={{backgroundColor: 'rgb(205, 211, 222)'}}></div>
-                <div className="h-3 rounded shimmer w-3/4" style={{backgroundColor: 'rgb(205, 211, 222, 0.7)'}}></div>
+                <div className="h-4 rounded shimmer mb-2" style={{backgroundColor: 'rgb(var(--border))'}}></div>
+                <div className="h-3 rounded shimmer w-3/4" style={{backgroundColor: 'rgb(var(--border) / 0.7)'}}></div>
               </div>
             </div>
           ) : (
@@ -118,16 +118,16 @@ export function StackSidebar() {
               >
                 <div className="group glass-subtle rounded-lg p-3 hover:glass transition-all duration-200 hover:scale-[1.01] border border-transparent">
                   <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200" style={{backgroundColor: 'rgba(134, 168, 201, 0.15)', color: 'rgb(134, 168, 201)'}}>
+                    <div className="w-6 h-6 rounded-md flex items-center justify-center transition-all duration-200" style={{backgroundColor: 'rgb(var(--primary) / 0.15)', color: 'rgb(var(--primary))'}}>
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate transition-colors text-sm" style={{color: 'rgb(41, 50, 65)'}}>
+                      <div className="font-medium truncate transition-colors text-sm" style={{color: 'rgb(var(--fg))'}}>
                         {stack.title}
                       </div>
-                      <div className="text-xs truncate transition-colors" style={{color: 'rgb(99, 112, 129)'}}>
+                      <div className="text-xs truncate transition-colors" style={{color: 'rgb(var(--muted))'}}>
                         Start new session
                       </div>
                     </div>
@@ -141,7 +141,7 @@ export function StackSidebar() {
 
       {/* Recent Sessions */}
       <div className="flex-1 p-4 overflow-y-auto modern-scrollbar">
-        <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{color: 'rgb(99, 112, 129)'}}>
+        <h3 className="text-xs font-semibold uppercase tracking-wider mb-4" style={{color: 'rgb(var(--muted))'}}>
           Recent Sessions
         </h3>
         <div className="space-y-2">
@@ -149,21 +149,21 @@ export function StackSidebar() {
             <div className="space-y-2">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="glass-subtle rounded-lg p-3 animate-pulse">
-                  <div className="h-3 rounded shimmer mb-2" style={{backgroundColor: 'rgb(205, 211, 222)'}}></div>
-                  <div className="h-2 rounded shimmer w-2/3 mb-1" style={{backgroundColor: 'rgba(205, 211, 222, 0.7)'}}></div>
-                  <div className="h-2 rounded shimmer w-1/2" style={{backgroundColor: 'rgba(205, 211, 222, 0.5)'}}></div>
+                  <div className="h-3 rounded shimmer mb-2" style={{backgroundColor: 'rgb(var(--border))'}}></div>
+                  <div className="h-2 rounded shimmer w-2/3 mb-1" style={{backgroundColor: 'rgb(var(--border) / 0.7)'}}></div>
+                  <div className="h-2 rounded shimmer w-1/2" style={{backgroundColor: 'rgb(var(--border) / 0.5)'}}></div>
                 </div>
               ))}
             </div>
           ) : sessions.length === 0 ? (
             <div className="glass-subtle rounded-lg p-4 text-center">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2" style={{backgroundColor: 'rgba(99, 112, 129, 0.2)', color: 'rgb(99, 112, 129)'}}>
+              <div className="w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-2" style={{backgroundColor: 'rgb(var(--muted) / 0.2)', color: 'rgb(var(--muted))'}}>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div className="text-xs mb-1" style={{color: 'rgb(99, 112, 129)'}}>No sessions yet</div>
-              <div className="text-xs" style={{color: 'rgba(99, 112, 129, 0.7)'}}>Start your first stack above</div>
+              <div className="text-xs mb-1" style={{color: 'rgb(var(--muted))'}}>No sessions yet</div>
+              <div className="text-xs" style={{color: 'rgb(var(--muted) / 0.7)'}}>Start your first stack above</div>
             </div>
           ) : (
             sessions.map((session) => (
@@ -179,8 +179,8 @@ export function StackSidebar() {
                       : "border-transparent hover:glass"
                   }`}
                   style={{
-                    borderColor: pathname.includes(session.id) ? 'rgba(134, 168, 201, 0.5)' : 'transparent',
-                    backgroundColor: pathname.includes(session.id) ? 'rgba(134, 168, 201, 0.08)' : undefined
+                    borderColor: pathname.includes(session.id) ? 'rgb(var(--primary) / 0.5)' : 'transparent',
+                    backgroundColor: pathname.includes(session.id) ? 'rgb(var(--primary) / 0.08)' : undefined
                   }}
                 >
                   <div className="flex items-start gap-3">
@@ -188,15 +188,15 @@ export function StackSidebar() {
                       className="w-2 h-2 rounded-full mt-2 flex-shrink-0 transition-all duration-200"
                       style={{
                         backgroundColor: session.status === "completed" 
-                          ? 'rgb(147, 197, 153)' 
-                          : 'rgb(134, 168, 201)'
+                          ? 'rgb(var(--success))' 
+                          : 'rgb(var(--primary))'
                       }}
                     ></div>
                     <div className="flex-1 min-w-0">
                       <div className="font-medium text-sm truncate transition-colors" style={{color: 'rgb(41, 50, 65)'}}>
                         {session.title}
                       </div>
-                      <div className="text-xs truncate transition-colors" style={{color: 'rgb(99, 112, 129)'}}>
+                      <div className="text-xs truncate transition-colors" style={{color: 'rgb(var(--muted))'}}>
                         {session.stack.title}
                       </div>
                       <div className="flex items-center gap-2 mt-1">
@@ -204,16 +204,16 @@ export function StackSidebar() {
                           className="text-xs px-2 py-0.5 rounded-full"
                           style={{
                             backgroundColor: session.status === 'completed' 
-                              ? 'rgba(147, 197, 153, 0.15)' 
-                              : 'rgba(134, 168, 201, 0.15)',
+                              ? 'rgb(var(--success) / 0.15)' 
+                              : 'rgb(var(--primary) / 0.15)',
                             color: session.status === 'completed' 
-                              ? 'rgb(147, 197, 153)' 
-                              : 'rgb(134, 168, 201)'
+                              ? 'rgb(var(--success))' 
+                              : 'rgb(var(--primary))'
                           }}
                         >
                           {session.status}
                         </span>
-                        <div className="text-xs" style={{color: 'rgba(99, 112, 129, 0.8)'}}>
+                        <div className="text-xs" style={{color: 'rgb(var(--muted) / 0.8)'}}>
                           {new Date(session.created_at).toLocaleDateString()}
                         </div>
                       </div>
