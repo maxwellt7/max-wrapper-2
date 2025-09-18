@@ -215,89 +215,92 @@ code {
     --accent-foreground: 0 0% 0%;
   }
 
-  /* Modern Stacks Theme Tokens */
+  /* Modern Stacks Dark Theme */
   .theme-stacks {
-    /* Core Colors - Light Theme */
-    --bg: 247 248 250; /* #F7F8FA */
-    --surface: 255 255 255; /* #FFFFFF */
-    --surface-2: 249 250 252; /* #F9FAFC */
-    --border: 205 211 222; /* #CDD3DE */
-    --fg: 41 50 65; /* #293241 */
-    --muted: 99 112 129; /* #637081 */
+    /* Core Colors - Dark Theme */
+    --bg: 10 10 15; /* #0a0a0f - Very dark background */
+    --surface: 17 17 27; /* #11111b - Dark surface */
+    --surface-2: 23 23 37; /* #171725 - Slightly lighter surface */
+    --border: 45 45 65; /* #2d2d41 - Subtle borders */
+    --fg: 240 240 245; /* #f0f0f5 - Light text */
+    --muted: 140 140 160; /* #8c8ca0 - Muted text */
     
-    /* Accent Colors - Muted & Soft */
-    --primary: 134 168 201; /* #86A8C9 */
-    --secondary: 156 163 175; /* #9CA3AF */
-    --accent: 147 197 221; /* #93C5DD */
-    --success: 147 197 153; /* #93C599 */
-    --warn: 251 191 36; /* #FBBF24 */
-    --destructive: 239 68 68; /* #EF4444 */
+    /* Accent Colors - Purple/Violet Theme */
+    --primary: 139 92 246; /* #8b5cf6 - Purple accent */
+    --secondary: 99 102 241; /* #6366f1 - Indigo accent */
+    --accent: 167 139 250; /* #a78bfa - Light purple */
+    --success: 52 211 153; /* #34d399 - Success green */
+    --warn: 251 191 36; /* #fbbf24 - Warning yellow */
+    --destructive: 239 68 68; /* #ef4444 - Error red */
     
-    /* Glow Colors - Very Subtle */
-    --glow-primary: 134 168 201; /* #86A8C9 */
-    --glow-secondary: 156 163 175; /* #9CA3AF */
-    --glow-accent: 147 197 221; /* #93C5DD */
-    --glow-success: 147 197 153; /* #93C599 */
-    --glow-warn: 251 191 36; /* #FBBF24 */
-    --glow-destructive: 239 68 68; /* #EF4444 */
+    /* Glow Colors - Purple/Violet Glows */
+    --glow-primary: 139 92 246; /* #8b5cf6 */
+    --glow-secondary: 99 102 241; /* #6366f1 */
+    --glow-accent: 167 139 250; /* #a78bfa */
+    --glow-success: 52 211 153; /* #34d399 */
+    --glow-warn: 251 191 36; /* #fbbf24 */
+    --glow-destructive: 239 68 68; /* #ef4444 */
     
-    /* Focus ring color for accessibility */
-    --ring: 134 168 201; /* Same as primary for consistency */
+    /* Focus ring color - Purple */
+    --ring: 139 92 246; /* Purple focus ring */
   }
 }
 
 @layer utilities {
-  /* Glow Effects - Very Subtle for Light Theme */
+  /* Glow Effects - Enhanced for Dark Theme */
   .glow-primary {
-    filter: drop-shadow(0 0 4px rgb(var(--glow-primary) / 0.15));
+    filter: drop-shadow(0 0 20px rgb(var(--glow-primary) / 0.6));
   }
   
   .glow-secondary {
-    filter: drop-shadow(0 0 4px rgb(var(--glow-secondary) / 0.15));
+    filter: drop-shadow(0 0 20px rgb(var(--glow-secondary) / 0.6));
   }
   
   .glow-accent {
-    filter: drop-shadow(0 0 4px rgb(var(--glow-accent) / 0.15));
+    filter: drop-shadow(0 0 20px rgb(var(--glow-accent) / 0.6));
   }
   
   .glow-success {
-    filter: drop-shadow(0 0 4px rgb(var(--glow-success) / 0.15));
+    filter: drop-shadow(0 0 20px rgb(var(--glow-success) / 0.6));
   }
   
   .glow-warn {
-    filter: drop-shadow(0 0 4px rgb(var(--glow-warn) / 0.15));
+    filter: drop-shadow(0 0 20px rgb(var(--glow-warn) / 0.6));
   }
   
   .glow-destructive {
-    filter: drop-shadow(0 0 4px rgb(var(--glow-destructive) / 0.15));
+    filter: drop-shadow(0 0 20px rgb(var(--glow-destructive) / 0.6));
   }
   
-  /* Ring Glow Effects - Subtle */
+  /* Ring Glow Effects - Purple for Dark Theme */
   .ring-glow {
-    --tw-ring-color: rgb(var(--primary) / 0.2);
+    --tw-ring-color: rgb(var(--primary) / 0.5);
     --tw-ring-shadow: 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color), 
-                      0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+                      0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color),
+                      0 0 20px rgb(var(--primary) / 0.4);
   }
   
-  /* Glass Effects - Light Theme */
+  /* Glass Effects - Dark Theme */
   .glass {
-    background: rgb(var(--surface) / 0.75);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgb(var(--border) / 0.6);
+    background: rgb(var(--surface) / 0.8);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgb(var(--border) / 0.3);
+    box-shadow: 0 0 40px rgb(var(--primary) / 0.1);
   }
   
   .glass-subtle {
-    background: rgb(var(--surface) / 0.5);
-    backdrop-filter: blur(6px);
-    border: 1px solid rgb(var(--border) / 0.35);
+    background: rgb(var(--surface) / 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgb(var(--border) / 0.2);
+    box-shadow: 0 0 20px rgb(var(--primary) / 0.05);
   }
   
-  /* Vector Background - Light & Subtle */
+  /* Vector Background - Dark with Purple Gradient */
   .bg-vector {
     background-image: 
-      radial-gradient(circle at 20% 50%, rgb(var(--primary) / 0.04) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgb(var(--accent) / 0.03) 0%, transparent 50%),
-      radial-gradient(circle at 40% 80%, rgb(var(--secondary) / 0.02) 0%, transparent 50%);
+      radial-gradient(circle at 20% 50%, rgb(var(--primary) / 0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgb(var(--accent) / 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 40% 80%, rgb(var(--secondary) / 0.1) 0%, transparent 50%);
   }
   
   /* Animations */
