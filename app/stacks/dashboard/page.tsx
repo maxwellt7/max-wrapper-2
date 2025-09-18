@@ -155,9 +155,9 @@ export default function DashboardPage() {
               <ScrollArea className="h-64 modern-scrollbar">
                 <div className="space-y-4 pr-4">
                   {analysis.mentalLoops.map((loop, index) => (
-                    <div key={index} className="glass-subtle rounded-xl p-4 border border-slate-600/30 space-y-3">
+                    <div key={index} className="glass-subtle rounded-xl p-4 border space-y-3" style={{borderColor: 'rgb(var(--border) / 0.3)'}}>
                       <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-slate-200">{loop.pattern}</h4>
+                        <h4 className="font-semibold" style={{color: 'rgb(var(--fg))'}}>{loop.pattern}</h4>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           loop.impact === 'high' ? 'bg-red-500/20 text-red-400' :
                           loop.impact === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
@@ -166,8 +166,8 @@ export default function DashboardPage() {
                           {loop.impact} impact
                         </span>
                       </div>
-                      <p className="text-slate-400 text-sm">{loop.description}</p>
-                      <div className="text-xs text-slate-500">
+                      <p className="text-sm" style={{color: 'rgb(var(--muted))'}}>{loop.description}</p>
+                      <div className="text-xs" style={{color: 'rgb(var(--muted) / 0.7)'}}>
                         Frequency: {loop.frequency} occurrences
                       </div>
                       {loop.examples.length > 0 && (
@@ -316,12 +316,12 @@ export default function DashboardPage() {
                   <div className="text-sm" style={{color: 'rgb(var(--muted))'}}>Mental loops found</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-green-400 mb-1">{analysis.performanceAccelerators.length}</div>
-                  <div className="text-sm text-slate-400">Accelerators found</div>
+                  <div className="text-2xl font-bold mb-1" style={{color: 'rgb(var(--success))'}}>{analysis.performanceAccelerators.length}</div>
+                  <div className="text-sm" style={{color: 'rgb(var(--muted))'}}>Accelerators found</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-sm text-slate-400 mb-1">Analysis date</div>
-                  <div className="text-sm font-medium text-slate-300">{new Date(analysis.analysisDate).toLocaleDateString()}</div>
+                  <div className="text-sm mb-1" style={{color: 'rgb(var(--muted))'}}>Analysis date</div>
+                  <div className="text-sm font-medium" style={{color: 'rgb(var(--fg) / 0.8)'}}>{new Date(analysis.analysisDate).toLocaleDateString()}</div>
                 </div>
               </div>
             </div>
