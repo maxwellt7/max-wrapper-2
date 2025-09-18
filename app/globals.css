@@ -289,12 +289,12 @@ code {
     border: 1px solid rgb(var(--border) / 0.35);
   }
   
-  /* Vector Background */
+  /* Vector Background - Light & Subtle */
   .bg-vector {
     background-image: 
-      radial-gradient(circle at 20% 50%, rgba(106, 166, 255, 0.06) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(167, 139, 250, 0.04) 0%, transparent 50%),
-      radial-gradient(circle at 40% 80%, rgba(34, 211, 238, 0.03) 0%, transparent 50%);
+      radial-gradient(circle at 20% 50%, rgb(var(--primary) / 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgb(var(--accent) / 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 40% 80%, rgb(var(--secondary) / 0.02) 0%, transparent 50%);
   }
   
   /* Animations */
