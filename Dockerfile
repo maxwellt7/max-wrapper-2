@@ -1,5 +1,5 @@
-# Use the official Node.js 18.17.0 as a parent image
-FROM node:18.17.0-alpine as base
+# Use the official Node.js 20 as a parent image
+FROM node:20-alpine as base
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
@@ -7,8 +7,8 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json from the front directory
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies with legacy peer deps using ci for reproducible builds
+RUN npm ci --legacy-peer-deps
 
 # Copy the rest of your application's code from the front directory
 COPY . .
@@ -17,7 +17,10 @@ COPY . .
 RUN npm run build
 
 # Expose the port the app runs on
-EXPOSE 3000
+EXPOSE 5000
+
+# Set NODE_ENV to production to exclude dev dependencies
+ENV NODE_ENV=production
 
 # Start the app
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]
