@@ -39,10 +39,14 @@ localPort = 38731
 externalPort = 3001
 
 [[ports]]
+localPort = 42237
+externalPort = 3000
+
+[[ports]]
 localPort = 45551
 externalPort = 3002
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["npm", "run", "start"]
-build = ["npm", "ci", "--legacy-peer-deps", "--omit=dev", "--force", "&&", "npm", "run", "build"]
+build = ["bash", "-c", "npm ci --legacy-peer-deps --omit=dev && npm run build"]
+run = ["npm"]
