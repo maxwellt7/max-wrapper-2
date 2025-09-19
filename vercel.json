@@ -1,8 +1,10 @@
 {
   "buildCommand": "NODE_ENV=production npm run build",
-  "installCommand": "npm install --omit=dev --legacy-peer-deps",
+  "installCommand": "npm install --legacy-peer-deps --force --omit=dev",
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "NPM_CONFIG_LEGACY_PEER_DEPS": "true",
+    "NPM_CONFIG_FORCE": "true"
   },
   "rewrites": [
     {

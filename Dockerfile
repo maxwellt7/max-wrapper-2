@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install dependencies with legacy peer deps using ci for reproducible builds
-RUN npm ci --legacy-peer-deps
+RUN npm ci --legacy-peer-deps --force
 
 # Copy the rest of your application's code from the front directory
 COPY . .
