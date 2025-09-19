@@ -1,6 +1,9 @@
 {
-  "buildCommand": "npm run build",
-  "installCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "NODE_ENV=production npm run build",
+  "installCommand": "npm install --omit=dev --legacy-peer-deps",
+  "env": {
+    "NODE_ENV": "production"
+  },
   "rewrites": [
     {
       "source": "/apps/(.*)",

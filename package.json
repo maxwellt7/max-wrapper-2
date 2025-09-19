@@ -5,8 +5,8 @@
   },
   "scripts": {
     "dev": "next dev --turbopack --hostname 0.0.0.0 --port 5000",
-    "build": "next build",
-    "start": "next start --hostname 0.0.0.0 --port ${PORT:-5000}",
+    "build": "NODE_ENV=production next build",
+    "start": "NODE_ENV=production next start --hostname 0.0.0.0 --port ${PORT:-5000}",
     "postinstall": "npm dedupe"
   },
   "dependencies": {
