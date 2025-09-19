@@ -22,20 +22,20 @@ args = "Frontend Server"
 name = "Frontend Server"
 author = "agent"
 
+[workflows.workflow.metadata]
+outputType = "webview"
+
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
-
-[workflows.workflow.metadata]
-outputType = "webview"
 
 [[ports]]
 localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 37783
+localPort = 36649
 externalPort = 3000
 
 [[ports]]
@@ -48,5 +48,5 @@ externalPort = 3002
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["npm"]
-build = ["npm", "run", "build"]
+run = ["npm", "run", "start"]
+build = ["npm", "ci", "--legacy-peer-deps", "--omit=dev", "--force", "&&", "npm", "run", "build"]
