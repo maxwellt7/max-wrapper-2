@@ -16,7 +16,7 @@ export async function GET() {
     }
 
     // Format sessions to match expected frontend structure  
-    const formattedSessions = sessions.map(session => ({
+    const formattedSessions = sessions.map((session: any) => ({
       id: session.id,
       title: session.title,
       status: session.status,

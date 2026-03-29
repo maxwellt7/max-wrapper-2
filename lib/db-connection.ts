@@ -6,7 +6,7 @@ import { spawn } from 'child_process';
 import { URL } from 'url';
 
 // Execute SQL queries safely using psql via spawn and stdin
-export async function queryDb(query: string, params: any[] = []) {
+export async function queryDb(query: string, params: any[] = []): Promise<{ data: any; error: any }> {
   try {
     // Parse DATABASE_URL to get connection parameters
     const dbUrl = new URL(process.env.DATABASE_URL!);
@@ -297,7 +297,7 @@ export async function getAllSessions() {
   }
   
   // Transform to match expected format
-  const results = (data || []).map(row => ({
+  const results = (data || []).map((row: any) => ({
     id: row.id,
     stack_id: row.stack_id,
     user_id: row.user_id,
