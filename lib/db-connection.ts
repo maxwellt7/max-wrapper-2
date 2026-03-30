@@ -6,7 +6,7 @@ import { spawn } from 'child_process';
 import { URL } from 'url';
 
 // Execute SQL queries safely using psql via spawn and stdin
-export async function queryDb(query: string, params: any[] = []) {
+export async function queryDb(query: string, params: any[] = []): Promise<{ data: any[] | null; error: { message: string; type?: string } | null }> {
   try {
     // Parse DATABASE_URL to get connection parameters
     const dbUrl = new URL(process.env.DATABASE_URL!);

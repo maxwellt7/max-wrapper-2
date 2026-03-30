@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       session_id: sessionId,
       summary_text: summaryText,
       summary_json: {
-        answers: answers.map(a => ({
+        answers: answers.map((a: any) => ({
           question: a.question_text,
           answer: a.answer_text,
           key: a.question_key
