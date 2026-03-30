@@ -7,10 +7,16 @@ import {
   addUserCredits,
 } from "@/lib/db/payments";
 
-// Initialize Stripe with the secret key from environment variables
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-02-24.acacia",
-});
+// Initialize Stripe lazily to avoid build-time env var errors
+let _stripe: Stripe | null = null;
+function getStripe(): Stripe {
+  if (!_stripe) {
+    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: "2025-02-24.acacia",
+    });
+  }
+  return _stripe;
+}
 
 // Ensure dynamic content generation for each request
 export const dynamic = "force-dynamic";
@@ -31,7 +37,7 @@ export async function POST(request: NextRequest) {
 
   try {
     // Construct the Stripe event asynchronously
-    event = await stripe.webhooks.constructEventAsync(
+    event = await getStripe().webhooks.constructEventAsync(
       payload,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
@@ -67,7 +73,7 @@ async function handleCheckoutSessionCompleted(
   }
 
   // Retrieve line items from the session
-  const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+  const lineItems = await getStripe().checkout.sessions.listLineItems(session.id);
 
   if (lineItems.data.length === 0) {
     console.log("No line items found in the session");
@@ -97,7 +103,7 @@ async function handleCheckoutSessionCompleted(
 
   // If not found in session metadata, fetch product details
   if (!purchaseType) {
-    const product = await stripe.products.retrieve(productId);
+    const product = await getStripe().products.retrieve(productId);
 
     if (product.metadata && product.metadata.type) {
       purchaseType = product.metadata.type;

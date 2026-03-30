@@ -188,7 +188,7 @@ export function QuestionInput({
             color: 'rgb(var(--primary))',
             '--tw-ring-color': 'rgb(var(--ring))',
             '--tw-ring-offset-color': 'rgb(var(--bg))'
-          }}
+          } as React.CSSProperties}
         >
           {isSubmitting ? (
             <div className="flex items-center justify-center gap-2">

@@ -2,9 +2,13 @@ import { NextResponse } from "next/server";
 import { OpenAI } from 'openai';
 import { getAllSessions, getAnswersForSession } from "@/lib/db-connection";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+let _openai: OpenAI | null = null;
+function getOpenAI(): OpenAI {
+  if (!_openai) {
+    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  }
+  return _openai;
+}
 
 interface SessionAnswer {
   question_key: string;
@@ -129,7 +133,7 @@ RESPONSE FORMAT (JSON only):
   }
 }`;
 
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: "gpt-4o",
       messages: [
         {
